@@ -20,7 +20,17 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-}, { timestamps: true });
+}, { 
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
+}
+);
+
+productSchema.virtual("imageUrls").get(function () {
+    const baseUrl = process.env.BASE_URL || "http://localhost:5000";
+    return this.images.map(img => `${baseUrl}/uploads/${img}`);
+});
 
 const Product = mongoose.model('Product', productSchema);
 
