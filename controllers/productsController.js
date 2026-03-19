@@ -1,3 +1,4 @@
+const { default: mongoose } = require('mongoose');
 const Category = require('../models/Category');
 const Products = require('../models/Products');
 const fs = require("fs");
@@ -5,7 +6,7 @@ const path = require("path");
 
 const getAllProducts = async (req, res) => {
     try {
-        const products = await Products.find();
+        const products = await Products.find().populate("category", "name description");
         res.json(products);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -197,10 +198,29 @@ const deleteProduct = async (req, res) => {
     }
 };
 
+const getProductsByCategory = async (req, res) => {
+    try {
+        const { categoryId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+            return res.status(400).json({ message: "Invalid category id" });
+        }
+
+        const product = await Products.find({ category: categoryId }).populate("category", "name description");
+        if(!product){
+            return res.status(404).json({ message: 'Product not found'});
+        }
+        res.json(product)
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
 module.exports = {
     getAllProducts,
     createProduct,
     getProductById,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    getProductsByCategory
 };

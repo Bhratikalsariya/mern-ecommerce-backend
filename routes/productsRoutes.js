@@ -9,5 +9,6 @@ router.post("/create",authMiddleware, upload.array("images", 20), productsContro
 router.get("/:id", productsController.getProductById);
 router.put("/update/:id", authMiddleware,upload.array("images", 20), productsController.updateProduct);
 router.delete("/delete/:id",authMiddleware, productsController.deleteProduct);
+router.get("/category/:categoryId",authMiddleware,productsController.getProductsByCategory);
 
 module.exports = router;
